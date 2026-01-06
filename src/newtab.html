@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en" class="is-preloading">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>New Tab</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+
+  <script src="preload.js"></script>
+
+  <!--
+    Prevent the occasional "white flash" before newtab.css paints.
+    Keep this tiny + inline so it applies immediately.
+  -->
+  <style>
+    html, body { margin: 0; height: 100%; width: 100%; background: #05060a; }
+    @media (prefers-color-scheme: light) { html, body { background: #f4f6f9; } }
+  </style>
+
+  <link rel="stylesheet" href="newtab.css">
+</head>
+<body>
+  <div id="bg-layer" class="bg-layer"></div>
+
+  <header id="header" class="header">
+    <div class="header-left">
+      <a href="" target="_blank" rel="noopener noreferrer">
+        <img class="logo-icon" width="24" height="24" src="https://i.imgur.com/AFeefij.png">
+      </a>
+    </div>
+  </header>
+
+  <main class="main-content">
+    <div id="datetime-container" class="datetime-container time-pos-top-middle">
+      <div id="date-display" class="date-display"></div>
+      <div id="time-display" class="time-display"></div>
+    </div>
+
+    <form id="search-form" class="search-bar" autocomplete="off">
+      <div class="search-input-wrapper">
+        <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"></circle>
+          <path d="m21 21-4.35-4.35"></path>
+        </svg>
+
+        <input
+          type="text"
+          id="search-input"
+          class="search-input"
+          placeholder="Search the web or enter a URL"
+          autocomplete="off"
+        />
+      </div>
+    </form>
+  </main>
+
+  <div id="command-palette" class="command-palette hidden">
+    <div class="command-palette-backdrop"></div>
+    <div class="command-palette-container">
+      <div class="command-input-wrapper">
+        <svg class="command-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"></circle>
+          <path d="m21 21-4.35-4.35"></path>
+        </svg>
+        <input
+          type="text"
+          id="command-input"
+          class="command-input"
+          placeholder="Search the web or enter a URL"
+          autocomplete="off"
+        />
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <h1 class="main-heading">Developed By Kruz</h1>
+  </footer>
+
+  <div class="settings">
+    <button id="settings-btn" class="settings-btn" title="Settings" aria-haspopup="true" aria-expanded="false">
+      <img src="https://img.icons8.com/?size=100&id=9110&format=png&color=FFFFFF" alt="Button Image" style="width: 20px; height:20px;">
+    </button>
+
+    <div id="settings-popover" class="settings-popover hidden" role="dialog" aria-label="Settings">
+      <div class="settings-panel-header">
+        <div class="settings-panel-title">Settings</div>
+        <div class="settings-panel-subtitle">Customize your new tab</div>
+      </div>
+
+      <div class="settings-panel-body">
+        <section class="settings-section">
+          <div class="settings-section-title">Background</div>
+
+          <div class="settings-actions">
+            <button id="upload-bg-btn" class="settings-action settings-action-primary">Upload</button>
+            <button id="reset-bg-btn" class="settings-action settings-action-danger">Reset</button>
+          </div>
+
+          <div class="settings-field">
+            <div class="settings-field-row">
+              <label class="settings-label" for="blur-range">Blur</label>
+              <span id="blur-percent" class="settings-hint">0%</span>
+            </div>
+            <input id="blur-range" class="settings-range" type="range" min="0" max="24" step="1" value="0" />
+          </div>
+        </section>
+
+        <section class="settings-section">
+          <div class="settings-section-title">Search</div>
+
+          <div class="settings-field settings-field-inline">
+            <div>
+              <div class="settings-label">Show search</div>
+              <div class="settings-subhint">Toggle the search bar on the page</div>
+            </div>
+
+            <label class="switch">
+              <input id="search-toggle" type="checkbox" checked />
+              <span class="switch-slider" aria-hidden="true"></span>
+            </label>
+          </div>
+
+          <div class="settings-field">
+            <label class="settings-label" for="search-engine">Search engine</label>
+            <select id="search-engine" class="settings-select">
+              <option value="google">Google</option>
+              <option value="bing">Bing</option>
+              <option value="duckduckgo">DuckDuckGo</option>
+              <option value="yahoo">Yahoo</option>
+              <option value="brave">Brave Search</option>
+              <option value="startpage">Startpage</option>
+              <option value="ecosia">Ecosia</option>
+              <option value="qwant">Qwant</option>
+              <option value="swisscows">Swisscows</option>
+              <option value="yandex">Yandex</option>
+              <option value="baidu">Baidu</option>
+              <option value="searxng">SearXNG (public instance)</option>
+              <option value="wikipedia">Wikipedia</option>
+              <option value="youtube">YouTube</option>
+              <option value="reddit">Reddit</option>
+              <option value="amazon">Amazon</option>
+              <option value="custom">Custom…</option>
+            </select>
+          </div>
+
+          <div id="custom-search-field" class="settings-field hidden">
+            <label class="settings-label" for="custom-search-url">Custom search URL</label>
+            <input
+              id="custom-search-url"
+              class="settings-text"
+              type="text"
+              placeholder="Example: https://example.com/search?q={q}"
+              autocomplete="off"
+              spellcheck="false"
+            />
+            <div class="settings-subhint">
+              Use <code>{q}</code> where the search term should go. If you omit <code>{q}</code>, the query will be appended.
+            </div>
+          </div>
+
+          <div class="settings-field">
+            <label class="settings-label" for="search-placeholder">Placeholder</label>
+            <input
+              id="search-placeholder"
+              class="settings-text"
+              type="text"
+              placeholder="Search the web or enter a URL"
+            />
+          </div>
+        </section>
+
+        <section class="settings-section">
+          <div class="settings-section-title">Logo</div>
+
+          <div class="settings-field settings-field-inline">
+            <div>
+              <div class="settings-label">Show logo</div>
+              <div class="settings-subhint">Toggle the logo on the page</div>
+            </div>
+
+            <label class="switch">
+              <input id="logo-toggle" type="checkbox" checked />
+              <span class="switch-slider" aria-hidden="true"></span>
+            </label>
+          </div>
+
+          <div class="settings-field">
+            <label class="settings-label" for="logo-position">Position</label>
+            <select id="logo-position" class="settings-select"></select>
+          </div>
+        </section>
+
+        <section class="settings-section">
+          <div class="settings-section-title">Time</div>
+
+          <div class="settings-field settings-field-inline">
+            <div>
+              <div class="settings-label">Show clock</div>
+              <div class="settings-subhint">Toggle the clock on the page</div>
+            </div>
+
+            <label class="switch">
+              <input id="clock-toggle" type="checkbox" checked />
+              <span class="switch-slider" aria-hidden="true"></span>
+            </label>
+          </div>
+
+          <div class="settings-field">
+            <label class="settings-label" for="time-position">Position</label>
+            <select id="time-position" class="settings-select"></select>
+          </div>
+
+          <div class="settings-field">
+            <label class="settings-label" for="time-format">Time format</label>
+            <select id="time-format" class="settings-select">
+              <option value="12">12-hour</option>
+              <option value="24">24-hour</option>
+            </select>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <input type="file" id="bg-upload" accept="image/*" style="display:none;" />
+
+  <script src="newtab.js"></script>
+</body>
+</html>
