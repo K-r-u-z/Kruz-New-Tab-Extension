@@ -1,4 +1,4 @@
-# Helium New Tab
+# Kruz's New Tab (for Helium)
 
 A custom new tab extension for Helium browser featuring a search bar and custom backgrounds.
 
